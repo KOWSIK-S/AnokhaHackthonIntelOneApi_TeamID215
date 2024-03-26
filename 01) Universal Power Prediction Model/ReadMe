@@ -1,10 +1,19 @@
 Objective
-Forecast the expected power output based on yearly climate conditions at the client’s location.
+Develop a machine learning model capable of predicting solar power output based on diverse parameters such as:
 
+Temperature
+Humidity
+Wind speed
+Installation height
+Irradiation levels
+Snowfall
 Implementation
-Historical Climate Data Integration:
-Utilize the trained power prediction model.
-Input yearly climate data (temperature, humidity, etc.) to estimate power generation.
-Visualization and Reporting:
-Generate visualizations (graphs, charts) to communicate power output predictions.
-Provide insights into potential energy generation.
+Data Collection and Preprocessing:
+Gather historical climate data from the client’s site.
+Clean and preprocess the data for model training.
+Model Selection and Training:
+Explore regression algorithms (e.g., linear regression, random forests) to build the prediction model.
+Train the model using the collected data.
+Validation and Performance Metrics:
+Validate the model’s accuracy using test data.
+Evaluate performance metrics (e.g., Mean Absolute Error, Root Mean Squared Error)
