@@ -2,6 +2,9 @@
 ## Solar Farm Pre-installment and Management System ☀️
 The Solar Farm Pre-installment and Management System aims to optimize solar energy production, enhance efficiency, and ensure effective management. This comprehensive system encompasses various modules, each contributing to the overall success of solar farm installations.
 
+# About our Project✨
+As the global community grapples with the urgent need for sustainable solutions, we recognize the immense potential of renewable energy sources like solar power. We understand that the journey towards harnessing solar energy is not without its challenges, especially when it comes to planning, optimization, and maintenance. With this in mind, we've developed an application that aims to assist individuals and organizations in navigating these complexities more effectively. Powered by Intel oneAPI, our platform offers a user-friendly and data-driven approach to solar energy management. Our intent is to provide tools that facilitate better decision-making, from predicting power output and optimizing solar panel arrangements to determining placement angles and managing dust accumulation. We believe that by offering these functionalities, we can contribute to making the adoption of solar energy more accessible and efficient for everyone, taking a humble step towards a more sustainable future.
+
 # 1. Universal Power Prediction Model
 Objective
 Develop a machine learning model capable of predicting solar power output based on diverse parameters such as:
@@ -41,7 +44,7 @@ Address dust accumulation on solar panels to maintain peak efficiency.
 
 # Technologies used 🛠️
 
-#References 📓🗂️
+# References 📓🗂️
 
 
 
