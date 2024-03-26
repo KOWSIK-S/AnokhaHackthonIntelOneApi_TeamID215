@@ -5,7 +5,7 @@ The Solar Farm Pre-installment and Management System aims to optimize solar ener
 # 1. Universal Power Prediction Model
 Objective
 Develop a machine learning model capable of predicting solar power output based on diverse parameters such as:
-temperature_2_m_above_gnd,	relative_humidity_2_m_above_gnd,	mean_sea_level_pressure_MSL,	total_precipitation_sfc,	snowfall_amount_sfc,	total_cloud_cover_sfc,	high_cloud_cover_high_cld_lay,	medium_cloud_cover_mid_cld_lay,	low_cloud_cover_low_cld_lay,	shortwave_radiation_backwards_sfc,	wind_speed_10_m_above_gnd,	wind_direction_10_m_above_gnd,	wind_speed_80_m_above_gnd,	wind_direction_80_m_above_gnd,	wind_speed_900_mb	wind_direction_900_mb,	wind_gust_10_m_above_gnd,	angle_of_incidence,	zenith,	azimuth
+temperature_2_m_above_gnd,	relative_humidity_2_m_above_gnd,	mean_sea_level_pressure_MSL,	total_precipitation_sfc,	snowfall_amount_sfc,	total_cloud_cover_sfc,	high_cloud_cover_high_cld_lay,	medium_cloud_cover_mid_cld_lay,	low_cloud_cover_low_cld_lay,	shortwave_radiation_backwards_sfc,	wind_speed_10_m_above_gnd,	wind_direction_10_m_above_gnd,	wind_speed_80_m_above_gnd,	wind_direction_80_m_above_gnd,	wind_speed_900_mb,	wind_direction_900_mb,	wind_gust_10_m_above_gnd,	angle_of_incidence,	zenith,	azimuth
 # 2. Power Output Prediction
 Objective
 Forecast the expected power output based on yearly climate conditions at the client’s location.
