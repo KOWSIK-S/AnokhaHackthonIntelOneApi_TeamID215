@@ -1,4 +1,4 @@
-#Objective
+# Objective
 Develop a machine learning model capable of predicting solar power output based on diverse parameters such as:
 temperature_2_m_above_gnd,	
 relative_humidity_2_m_above_gnd,	
