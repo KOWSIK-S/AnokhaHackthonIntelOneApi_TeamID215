@@ -1,4 +1,4 @@
-Objective
+### Objective
 Address dust accumulation on solar panels to maintain peak efficiency.
 
 Implementation
