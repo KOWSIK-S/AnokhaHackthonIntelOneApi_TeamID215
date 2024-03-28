@@ -1,4 +1,4 @@
-Objective
+### Objective
 Optimize the angle for solar panel placement to maximize energy capture.
 
 Implementation
