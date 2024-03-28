@@ -1,4 +1,4 @@
-Objective
+### Objective
 Forecast the expected power output based on yearly climate conditions at the client’s location.
 
 Implementation
