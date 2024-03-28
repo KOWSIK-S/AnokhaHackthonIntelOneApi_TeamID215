@@ -1,4 +1,4 @@
-Objective
+### Objective
 Determine the maximum number of solar panels that can be installed on the specific site provided by the client.
 
 Implementation
