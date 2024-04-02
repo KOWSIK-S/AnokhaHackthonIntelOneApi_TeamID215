@@ -1,0 +1,15 @@
+import pyopencl as cl
+platform = cl.get_platforms()[0]
+device = platform.get_devices()[0]
+context = cl.Context([device])
+from directml import Model, Tensor
+
+X_train_tensor = Tensor(X_train, context=context)
+y_train_tensor = Tensor(y_train, context=context)
+
+model = Model(context=context)
+model.add(Dense(1, input_shape=(n_features,)))
+
+model.compile(optimizer='sgd', loss='mse')
+
+model.fit(X_train_tensor, y_train_tensor, epochs=100)
