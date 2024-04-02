@@ -1,0 +1,67 @@
+import pandas as pd
+import pyopencl as cl
+from directml import Model, Tensor
+
+df = pd.read_csv("rectangle_dataset.csv")
+
+# Extracting vertices (edge points - location vertices ) from the dataset
+df['x1'] = df['x1'].astype(float)
+df['y1'] = df['y1'].astype(float)
+df['x2'] = df['x2'].astype(float)
+df['y2'] = df['y2'].astype(float)
+
+# Calculate the actual area based on vertices
+df['actual_area'] = (df['x2'] - df['x1']) * (df['y2'] - df['y1'])
+platform = cl.get_platforms()[0]
+device = platform.get_devices()[0]
+context = cl.Context([device])
+
+# For our dataset with X_train (vertices) and y_train (actual areas)
+X_train_tensor = Tensor(X_train, context=context)
+y_train_tensor = Tensor(y_train, context=context)
+
+#  model
+model = Model(context=context)
+model.add(Dense(1, input_shape=(n_features,)))
+
+# Compile the model
+model.compile(optimizer='sgd', loss='mse')
+
+# Train the model
+model.fit(X_train_tensor, y_train_tensor, epochs=100)
+
+# Now, for inference:
+X_new_tensor = Tensor(X_new, context=context)
+predicted_area = model.predict(X_new_tensor)
+
+print(f"Predicted area for the new rectangle: {predicted_area[0]}")
+
+
+# Assuming you have the dimensions of the available space (length and width)
+available_length = (df['x2'] - df['x1'])
+available_width = (df['y2'] - df['y1'])
+
+# Let the dimensions of the solar pannel (length and width)
+m = 200
+n = 140
+rectangle_length = m
+rectangle_width = n
+
+# Let the gap sizes (m and n)
+a = 20
+b = 0.8
+gap_length = a
+gap_width = b
+
+# Calculate the effective dimensions considering gaps
+effective_length = rectangle_length + gap_length
+effective_width = rectangle_width + gap_width
+
+# Calculate the number of rectangles that can fit along the length and width
+num_rectangles_length = available_length // effective_length
+num_rectangles_width = available_width // effective_width
+
+
+total_rectangles = num_rectangles_length * num_rectangles_width
+
+print(f"Number of rectangles that can fit: {total_rectangles}")
