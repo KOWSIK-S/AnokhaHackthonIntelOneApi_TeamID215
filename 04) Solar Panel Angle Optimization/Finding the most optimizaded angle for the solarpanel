@@ -1,0 +1,86 @@
+import sys
+import argparse
+import math
+import time
+import calendar
+import numpy as np
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+
+# Importing Intel Distribution for Python (IDP) optimizations
+from intel_distribution_for_python import numpy as idp_numpy
+from intel_distribution_for_python import math as idp_math
+
+# Inputs & Defaults
+def options(arg):
+    arg.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    arg.add_argument("-sc", type=float, help="Solar Constant (@1AU) in kW/m² [Default: 1361.0]", default=1361.0)
+    arg.add_argument("-lat", type=float, help="Latitude in decimal degrees [Default: 48.0]", default=48.00000)
+    arg.add_argument("-lon", type=float, help="Longitude in decimal degrees [Default: 11.0]", default=11.00000)
+    arg.add_argument("-alt", type=float, help="Altitude in meters above NN [Default: 0]", default=0)
+    arg.add_argument("-date", type=str, help="ISO Date YYYY-MM-DD [Default: " + time.strftime("%Y-%m-%d") + "]", default=time.strftime("%Y-%m-%d"))
+    arg.add_argument("-time", type=str, help="ISO Time HH:MM:SS [Default: " + time.strftime("%H:%M:%S") + "]", default=time.strftime("%H:%M:%S"))
+    arg.add_argument("-at_t", type=float, help="Atmospheric Temperature in °C [Default: 25.0]", default=25.0)
+    arg.add_argument("-at_h", type=float, help="Atmospheric Relative Humidity in Percent [Default: 50]", default=50.0)
+    arg.add_argument("-at_p", type=float, help="Atmospheric Air Pressure in hPa [Default: Computed]")
+    arg.add_argument("-at_tc", type=float, help="Atmospheric Turbidity Coefficient [Default: 0.95]", default=0.95)
+    arg.add_argument("-pv_a", type=float, help="Effective PV Panel Surface in m² [Default: 1.67]", default=1.67)
+    arg.add_argument("-pv_e", type=float, help="PV Panel Efficiency in Percent [Default: 16]", default=20)
+    arg.add_argument("-pv_t", type=float, help="PV Panel Temperature in °C [Default: 25.0]", default=25.0)
+    arg.add_argument("-pv_tc", type=float, help="PV Panel negative Temp. Coefficient [Default: 0.35]", default=0.35)
+    arg.add_argument("-pv_ac", type=float, help="PV Panel age related Coefficient [Default: 0.98]", default=0.98)
+
+# Outputs
+def output(opt, res):
+    if res['sol_z'] > 90:
+        if opt.verbose:
+            print("The sun has set - no data")
+            return 0
+        else:
+            print("0.0|0.0|90.0|0.0|0.0")
+            return 0
+    elif not opt.verbose:
+        print("%.1f|%.1f|%.1f|%.1f|%.1f" % (res['ETR'], res['RSO'], res['sol_z'], res['pv_max'], res['pv_out']))
+        return 0
+    else:
+        print(f"--------+--------------------------------------------------------")
+        print(f" UCSSPM | Clear-Sky Prediction for {opt.date} @ {opt.time}")
+        print("--------+--------------------------------------------------------")
+        print(f" Solar Constant                : {opt.sc} kW/m² @ 1AU")
+        print(f" Atmospheric turbidity coefficient      : {opt.at_tc}")
+        print("-----------------------------------------------------------------")
+        print(f" Equation of time               : {res['eqt']} min")
+        print(f" Inverse relative distance factor       : {res['sol_r']}")
+        print(f" Sun declination               : {res['sol_d']}°")
+        print(f" Solar Noon                  : {res['sol_n']}")
+        print(f" Barometric Pressure at site         : {opt.at_p} kPa")
+        print(f" Estimated Vapor Pressure at site       : {res['at_vp']} kPa")
+        print(f" Estimated Extraterrestrial Radiation     : {res['ETR']} W/m²")
+        print(f" Estimated precipitable water in Atmosphere  : {res['at_pw']} mm")
+        print(f" Clearness index for direct beam radiation  : {res['CIDBR']}")
+        print(f" Transmissivity index for diffuse radiation  : {res['TIDR']}")
+        print("-----------------------------------------------------------------")
+        print(f" Estimated Max. global solar radiation (Rs)  : \033[1;33m{res['RSO']:.1f} W/m²\033[0m")
+        print("-----------------------------------------------------------------")
+        print(f" Optimum Elevation of PV-Panel        : \033[1;37m{res['sol_z']:.1f}°\033[0m")
+        print(f" Estimated Max. Clear-Sky PV-Power Output   : \033[1;32m{res['pv_max']:.1f} W\033[0m \033[1;37m@ {opt.pv_e}% Peff\033[0m")
+        if res['pv_lp'] >= 0:
+            print(f" PV-Panel temperature ({opt.pv_t:.1f} °C) compensation - \033[1;31m{res['pv_lp']:.1f} W / {res['pv_l']:.1f}%%\033[0m")
+        else:
+            print(f" PV-Panel temperature ({opt.pv_t:.1f} °C) compensation + \033[1;32m{abs(res['pv_lp']) :.1f} W / {abs(res['pv_l']) :.1f}%%\033[0m")
+        print(f" PV-Panel aging loss             - \033[1;31m{res['pv_la']:.1f} W\033[0m")
+        print("-----------------------------------------------------------------")
+        print(f" Compensated Max. Clear-Sky PV-Power Output  : \033[1;32m{res['pv_out']:.1f} W\033[0m")
+        return 0
+
+# Compute optimal angle and elevation
+def compute_optimal_angle_elevation(opt):
+    angles = np.linspace(0, 90, 10)  # Angle in degrees
+    elevations = np.linspace(0, 90, 10)  # Elevation in degrees
+
+    max_radiation = 0
+    optimal_angle = 0
+    optimal_elevation = 0
+
+    for angle in angles:
+        for elevation in elevations:
