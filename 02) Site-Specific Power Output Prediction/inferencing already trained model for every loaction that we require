@@ -1,0 +1,6 @@
+!pip install intel-extension-for-pytorch
+import torch
+model_path = 'train_1.pth'
+model = torch.load(model_path)
+model = ipex.optimize(model)
+#To be used for next step
