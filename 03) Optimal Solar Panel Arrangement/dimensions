@@ -1,7 +1,7 @@
 import pandas as pd
 import pyopencl as cl
-from directml import Model, Tensor
-
+import torch
+from intel_extension_for_pytorch import optimize
 df = pd.read_csv("rectangle_dataset.csv")
 
 # Extracting vertices (edge points - location vertices ) from the dataset
@@ -29,6 +29,9 @@ model.compile(optimizer='sgd', loss='mse')
 
 # Train the model
 model.fit(X_train_tensor, y_train_tensor, epochs=100)
+
+model = optimize(model)
+from directml import Model, Tensor
 
 # Now, for inference:
 X_new_tensor = Tensor(X_new, context=context)
